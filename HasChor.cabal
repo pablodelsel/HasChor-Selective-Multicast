@@ -39,7 +39,9 @@ library
         Choreography.Network
         Choreography.Network.Http
         Choreography.Network.Local
+        Choreography.Network.HttpInstrumented
         Control.Monad.Freer
+        RestrictedChoreography
     build-depends:
         , base                 >= 4.16 && < 4.20
         , bytestring           >= 0.11 && < 0.13
@@ -194,3 +196,22 @@ executable playground
     build-depends:
         , HasChor
         , base         >= 4.16 && < 4.20
+
+
+-- Restricted Choreographies examples
+
+executable r-test
+  hs-source-dirs: examples/r-test
+  main-is: Main.hs
+  default-language: GHC2021
+  build-depends:
+    , HasChor
+    , base
+
+executable r-benchmark
+  hs-source-dirs: examples/r-benchmark
+  main-is: Main.hs
+  default-language: GHC2021
+  build-depends:
+    , HasChor
+    , base

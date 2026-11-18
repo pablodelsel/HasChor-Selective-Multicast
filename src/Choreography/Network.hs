@@ -50,6 +50,11 @@ recv l = toFreer $ Recv l
 broadcast :: Show a => a -> Network m ()
 broadcast a = toFreer $ BCast a
 
+-- | Multicast to a specified restricted set of recipients, excluding the sender.
+selectiveMulticast :: Show a => a -> LocTm -> [LocTm] -> Network m ()
+selectiveMulticast value sender roles  =  mapM_ (send value) (filter (/= sender) roles)
+
+
 -- * Message transport backends
 
 -- | A message transport backend defines a /configuration/ of type @c@ that
