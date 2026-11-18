@@ -17,6 +17,7 @@ import GHC.TypeLits
 -- specific location.
 type Unwrap l = forall a. a @ l -> a
 
+
 -- | Effect signature for the `Choreo` monad. @m@ is a monad that represents
 -- local computations.
 data ChoreoSig m a where
@@ -37,17 +38,28 @@ data ChoreoSig m a where
        -> (a -> Choreo m b)
        -> ChoreoSig m b
 
+  CondSelective :: (Show a, Read a, KnownSymbol l)
+                => [LocTm]
+                -> Proxy l
+                -> a @ l
+                -> (a -> Choreo m ())
+                -> ChoreoSig m ()
+
+
 -- | Monad for writing choreographies.
 type Choreo m = Freer (ChoreoSig m)
+
 
 -- | Run a `Choreo` monad directly.
 runChoreo :: Monad m => Choreo m a -> m a
 runChoreo = interpFreer handler
   where
     handler :: Monad m => ChoreoSig m a -> m a
-    handler (Local _ m)  = wrap <$> m unwrap
-    handler (Comm _ a _) = return $ (wrap . unwrap) a
-    handler (Cond _ a c) = runChoreo $ c (unwrap a)
+    handler (Local _ m)   =  wrap <$> m unwrap
+    handler (Comm _ a _)  =  return $ (wrap . unwrap) a
+    handler (Cond _ a c)  =  runChoreo $ c (unwrap a)
+    handler (CondSelective _ _ a c)  =  runChoreo $ c (unwrap a)
+
 
 -- | Endpoint projection.
 epp :: Choreo m a -> LocTm -> Network m a
@@ -62,9 +74,19 @@ epp c l' = interpFreer handler c
       | toLocTm s == l'        = send (unwrap a) (toLocTm r) >> return Empty
       | toLocTm r == l'        = wrap <$> recv (toLocTm s)
       | otherwise              = return Empty
+
+    -- Original conditional: full broadcast.
     handler (Cond l a c)
       | toLocTm l == l' = broadcast (unwrap a) >> epp (c (unwrap a)) l'
       | otherwise       = recv (toLocTm l) >>= \x -> epp (c x) l'
+
+    -- Restricted conditional: selective multicast.
+    handler (CondSelective roles l a c)
+      | toLocTm l == l'  =  selectiveMulticast (unwrap a) l' roles >> epp (c (unwrap a)) l'
+      | l' `elem` roles  =  recv (toLocTm l) >>= \x -> epp (c x) l'
+      | otherwise  =  return ()
+
+
 
 -- * Choreo operations
 

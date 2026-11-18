@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+type: software
+title: "HasChor Selective Multicast"
+authors:
+  - family-names: del Sel
+    given-names: Pablo
+abstract: >-
+  An extension of HasChor that introduces restricted choreographies and
+  selective multicast for conditional decision propagation.
+version: "0.1.0"
+license: BSD-3-Clause
+repository-code: "https://github.com/pablodelsel/HasChor-Selective-Multicast"
+url: "https://github.com/pablodelsel/HasChor-Selective-Multicast"
+keywords:
+  - Haskell
+  - choreographic programming
+  - distributed programming
+  - restricted choreographies
+  - selective multicast
+references:
+  - type: article
+    authors:
+      - family-names: Shen
+        given-names: Gan
+      - family-names: Kashiwa
+        given-names: Shun
+      - family-names: Kuper
+        given-names: Lindsey
+    title: "HasChor: Functional Choreographic Programming for All (Functional Pearl)"
+    journal: "Proceedings of the ACM on Programming Languages"
+    volume: 7
+    issue: ICFP
+    year: 2023
+    doi: "10.1145/3607849"
+    url: "https://doi.org/10.1145/3607849"
+  - type: software
+    authors:
+      - name: "HasChor contributors"
+    title: "HasChor"
+    repository-code: "https://github.com/gshen42/HasChor"
